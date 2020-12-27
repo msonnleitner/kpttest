@@ -1,0 +1,54 @@
+name: Build release and deploy main version to DEV
+on:
+  push:
+    branches:
+    - master
+jobs:
+  build:
+    env:
+      SERVICE_NAME: name # {"$kpt-set":"name"}
+      GCLOUD_GCR_PROJECT: tools-org-acme # {"$kpt-set":"gcloud_gcr_project"}
+      APP_IMAGE: eu.gcr.io/tools-org-acme/service # {"$kpt-set":"app-image"}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: "! contains(toJSON(github.event.commits.*.message), 'skip ci')"
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.AUTO_KEY }}
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Cache npm files
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dev dependencies
+      run: npm install
+    - name: install Skaffold
+      run: |
+        curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+        sudo install /tmp/skaffold /usr/local/bin/
+    - name: Login to GCP
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: latest
+        project_id: ${{ env.GCLOUD_GCR_PROJECT }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - run: gcloud auth configure-docker
+    - name: auto get next version and set image version
+      working-directory: kustomize/base
+      run: |-
+        git config --global user.email "team@acme.io"
+        git config --global user.name "Team"
+        export AUTO_VERSION=$(GH_TOKEN=${{ secrets.AUTO_KEY }} npm run auto-release-dry-run | tail -n 1);
+        kustomize edit set image $APP_IMAGE:$AUTO_VERSION
+        git add kustomization.yaml && git commit -m "[skip ci] bump image version" && git push
+    - name: auto release
+      run: GH_TOKEN=${{ secrets.AUTO_KEY }} npm run auto-release
+    - name: Deploy images to GCR
+      run: skaffold build

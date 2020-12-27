@@ -1,0 +1,132 @@
+apiVersion: kpt.dev/v1alpha1
+kind: Kptfile
+metadata:
+  name: service
+packageMetadata:
+  shortDescription: A generic kubernetes app with Istio virtual service
+openAPI:
+  definitions:
+    io.k8s.cli.setters.hosts:
+      description: the domain of this service
+      x-k8s-cli:
+        setter:
+          name: hosts
+          value: service.dev.acme.io
+          required: true
+          isSet: true
+    io.k8s.cli.substitutions.sub-hosts:
+      x-k8s-cli:
+        substitution:
+          name: sub-hosts
+          pattern: ${feature}.${hosts}
+          values:
+          - marker: ${feature}
+            ref: '#/definitions/io.k8s.cli.setters.feature'
+          - marker: ${hosts}
+            ref: '#/definitions/io.k8s.cli.setters.hosts'
+    io.k8s.cli.substitutions.feature:
+      x-k8s-cli:
+        substitution:
+          name: name-prefix
+          pattern: ${feature}-
+          values:
+          - marker: ${feature}
+            ref: '#/definitions/io.k8s.cli.setters.feature'
+    io.k8s.cli.setters.container-registry:
+      description: container registry to use
+      x-k8s-cli:
+        setter:
+          name: hosts
+          value: eu.gcr.io
+    io.k8s.cli.setters.feature:
+      description: for feature branch overlays, set this value
+      x-k8s-cli:
+        setter:
+          name: feature
+          value: feature
+    io.k8s.cli.setters.name:
+      description: the name of this service , e.g. party-service
+      x-k8s-cli:
+        setter:
+          name: name
+          value: service
+          required: true
+          isSet: true
+    io.k8s.cli.setters.gke_cluster:
+      description: name of gke cluster to deploy with skaffold
+      x-k8s-cli:
+        setter:
+          name: gke_cluster
+          value: gke1
+    io.k8s.cli.setters.gcloud_zone:
+      description: zone of gke cluster to deploy with skaffold
+      x-k8s-cli:
+        setter:
+          name: gcloud_zone
+          value: europe-west1
+    io.k8s.cli.setters.gcloud_application_project:
+      description: gcp project of gke cluster to deploy with skaffold
+      x-k8s-cli:
+        setter:
+          name: gcloud_application_project
+          value: dev-org-acme
+          required: true
+          isSet: true
+    io.k8s.cli.setters.gcloud_gcr_project:
+      description: gcp project of gcr registry to deploy with skaffold
+      x-k8s-cli:
+        setter:
+          name: gcloud_gcr_project
+          value: tools-org-acme
+          required: true
+          isSet: true
+    io.k8s.cli.setters.gke_deploy_namespace:
+      description: kubernetes of the namespace in the gke cluster to deploy with skaffold
+      x-k8s-cli:
+        setter:
+          name: gke_deploy_namespace
+          value: org-istio
+          required: true
+          isSet: true
+    io.k8s.cli.setters.db-secret:
+      description: name of the db kubernetes secret
+      x-k8s-cli:
+        setter:
+          name: db-secret
+          value: db-secret
+    io.k8s.cli.substitutions.app-image:
+      x-k8s-cli:
+        substitution:
+          name: app-image
+          pattern: ${container-registry}/${gcloud_gcr_project}/${name}
+          values:
+          - marker: ${container-registry}
+            ref: '#/definitions/io.k8s.cli.setters.container-registry'
+          - marker: ${gcloud_gcr_project}
+            ref: '#/definitions/io.k8s.cli.setters.gcloud_gcr_project'
+          - marker: ${name}
+            ref: '#/definitions/io.k8s.cli.setters.name'
+    io.k8s.cli.substitutions.doc-image:
+      x-k8s-cli:
+        substitution:
+          name: doc-image
+          pattern: ${container-registry}/${gcloud_gcr_project}/${name}-doc
+          values:
+          - marker: ${container-registry}
+            ref: '#/definitions/io.k8s.cli.setters.container-registry'
+          - marker: ${gcloud_gcr_project}
+            ref: '#/definitions/io.k8s.cli.setters.gcloud_gcr_project'
+          - marker: ${name}
+            ref: '#/definitions/io.k8s.cli.setters.name'
+    io.k8s.cli.substitutions.flyway-image:
+      x-k8s-cli:
+        substitution:
+          name: flyway-image
+          pattern: ${container-registry}/${gcloud_gcr_project}/${name}-flyway
+          values:
+          - marker: ${container-registry}
+            ref: '#/definitions/io.k8s.cli.setters.container-registry'
+          - marker: ${gcloud_gcr_project}
+            ref: '#/definitions/io.k8s.cli.setters.gcloud_gcr_project'
+          - marker: ${name}
+            ref: '#/definitions/io.k8s.cli.setters.name'

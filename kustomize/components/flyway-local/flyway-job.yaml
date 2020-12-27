@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: service # {"$kpt-set":"name"}
+      containers:
+      - name: flyway
+        image: eu.gcr.io/tools-org-acme/service-flyway # {"$kpt-set":"flyway-image"}
+        command: ["/flyway/flyway", "migrate"]
+        env:
+        - name: FLYWAY_URL
+          value: jdbc:postgresql://localhost:5432/org
+        - name: FLYWAY_CONNECT_RETRIES
+          value: "20"
+        - name: FLYWAY_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret # {"$kpt-set":"db-secret"}
+              key: username
+        - name: FLYWAY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret # {"$kpt-set":"db-secret"}
+              key: password

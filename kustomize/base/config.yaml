@@ -1,0 +1,7 @@
+commonLabels:
+- path: spec/selector/matchLabels
+  kind: RequestAuthentication
+  create: true
+- path: spec/selector/matchLabels
+  kind: AuthorizationPolicy
+  create: true

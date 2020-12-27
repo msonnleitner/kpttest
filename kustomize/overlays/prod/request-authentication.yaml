@@ -1,0 +1,10 @@
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  jwtRules:
+  - issuer: https://acme-io.eu.auth0.com/
+    jwksUri: https://acme-io.eu.auth0.com/.well-known/jwks.json
+    audiences:
+    - https://eta.acme.io

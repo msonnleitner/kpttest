@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: service # {"$kpt-set":"name"}
+      containers:
+      - name: flyway
+        image: eu.gcr.io/tools-org-acme/service-flyway # {"$kpt-set":"flyway-image"}
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          trap "touch /tmp/pod/flyway-terminated" EXIT
+          /flyway/flyway migrate
+          # signal istio-proxy to quit, simlarly to the trap for flyway
+          curl --request POST localhost:15020/quitquitquit
+        env:
+        - name: FLYWAY_URL
+          value: jdbc:postgresql://localhost:5432/org
+        - name: FLYWAY_CONNECT_RETRIES
+          value: "20"
+        - name: FLYWAY_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret # {"$kpt-set":"db-secret"}
+              key: username
+        - name: FLYWAY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret # {"$kpt-set":"db-secret"}
+              key: password
+        volumeMounts:
+        - name: tmp-pod
+          mountPath: /tmp/pod
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.18.0-buster
+        # with istio, we need the proxy to get ready
+        # it also works without this config
+        # but then the cloud sql proxy restarts, causing delays
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          while ! timeout 1 bash -c "</dev/tcp/169.254.169.254/80"; do sleep 1; echo "sleep"; done
+          /cloud_sql_proxy -instances=${CLOUD_SQL_INSTANCES}=tcp:5432 & CHILD_PID=$!
+          (while true; do if [[ -f "/tmp/pod/flyway-terminated" ]]; then kill $CHILD_PID; break; fi; sleep 1; done) &
+          wait $CHILD_PID
+          if [[ -f "/tmp/pod/flyway-terminated" ]]; then exit 0; fi
+        env:
+        - name: CLOUD_SQL_INSTANCES
+          valueFrom:
+            configMapKeyRef:
+              name: db-secret # {"$kpt-set":"db-secret"}
+              key: connection_string
+        volumeMounts:
+        - name: tmp-pod
+          mountPath: /tmp/pod
+      volumes:
+      - name: tmp-pod
+        emptyDir: {}

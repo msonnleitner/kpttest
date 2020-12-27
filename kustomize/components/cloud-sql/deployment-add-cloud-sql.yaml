@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  template:
+    spec:
+      containers:
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.18.0-buster
+        # with istio, we need the proxy to get ready
+        # it also works without this config
+        # but then the cloud sql proxy restarts, causing delays
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          while ! timeout 1 bash -c "</dev/tcp/169.254.169.254/80"; do sleep 1; done
+
+          exec /cloud_sql_proxy -instances=${CLOUD_SQL_INSTANCES}=tcp:5432 -term_timeout=10s
+        env:
+        - name: CLOUD_SQL_INSTANCES
+          valueFrom:
+            configMapKeyRef:
+              key: org_db_connection_string
+              name: database
+        securityContext:
+          runAsUser: 2 # non-root user
+          allowPrivilegeEscalation: false

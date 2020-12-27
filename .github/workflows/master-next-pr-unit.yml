@@ -1,0 +1,26 @@
+name: Unit Tests for next/master PR
+on:
+  pull_request:
+    branches:
+    - master
+    - next
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Cache npm files
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dev dependencies
+      run: npm install
+    - name: Run unit tests
+      run: npm run test

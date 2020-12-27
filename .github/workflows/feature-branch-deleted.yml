@@ -1,0 +1,35 @@
+name: Delete feature branch from dev
+on:
+  delete:
+    branches:
+    - feature/[0-9A-Za-z]+-?[0-9A-Za-z]*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SERVICE_NAME: name # {"$kpt-set":"name"}
+      GKE_CLUSTER: gke1 # {"$kpt-set":"gke_cluster"}
+      GCLOUD_ZONE: europe-west1 # {"$kpt-set":"gcloud_zone"}
+      GCLOUD_APPLICATION_PROJECT: dev-org-acme # {"$kpt-set":"gcloud_application_project"}
+      GCLOUD_GCR_PROJECT: tools-org-acme # {"$kpt-set":"gcloud_gcr_project"}
+      KUBERNETES_DEPLOY_NAMESPACE: org-istio # {"$kpt-set":"gke_deploy_namespace"}
+    steps:
+    - uses: actions/checkout@v2
+    - name: install Skaffold
+      run: |
+        curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+        sudo install /tmp/skaffold /usr/local/bin/
+    - name: Login to GCP
+      uses: google-github-actions/setup-gcloud@master
+      with:
+        version: latest
+        project_id: ${{ env.GCLOUD_GCR_PROJECT }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+    - run: gcloud auth configure-docker
+    - run: gcloud container clusters get-credentials $GKE_CLUSTER --zone=$GCLOUD_ZONE
+        --project=$GCLOUD_APPLICATION_PROJECT
+    - name: Delete application from k8s cluster
+      run: |-
+        export GITHUB_EVENT_REF=${{ github.event.ref }};
+        CONTEXT=${GITHUB_EVENT_REF##*/} skaffold delete --namespace=$KUBERNETES_DEPLOY_NAMESPACE;

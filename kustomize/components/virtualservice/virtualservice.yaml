@@ -1,0 +1,17 @@
+# https://istio.io/latest/docs/reference/config/networking/virtual-service/
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  hosts:
+  - service.dev.acme.io # {"$kpt-set":"hosts"}
+  gateways:
+  - party.istio-system.svc.cluster.local
+  http:
+  - name: service # {"$kpt-set":"name"}
+    route:
+    - destination:
+        host: service # {"$kpt-set":"name"}
+        port:
+          number: 80

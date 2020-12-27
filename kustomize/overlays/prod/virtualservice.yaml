@@ -1,0 +1,7 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  hosts:
+  - service.dev.acme.io

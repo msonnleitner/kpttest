@@ -1,0 +1,17 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: service # {"$kpt-set":"name"}
+spec:
+  rules:
+  - from:
+    - source:
+        requestPrincipals: ["*"]
+  - to:
+    - operation:
+        paths:
+        - /health
+        - /noAuth
+  - to:
+    - operation:
+        methods: ["OPTIONS"]

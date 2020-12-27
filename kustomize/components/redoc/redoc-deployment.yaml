@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-docs
+  labels:
+    app: service # {"$kpt-set":"name"}
+    version: v1
+    component: docs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service # {"$kpt-set":"name"}
+      version: v1
+      component: docs
+  template:
+    metadata:
+      labels:
+        app: service # {"$kpt-set":"name"}
+        version: v1
+        component: docs
+    spec:
+      containers:
+      - name: party-service-docs
+        image: eu.gcr.io/tools-org-acme/service-doc # {"$kpt-set":"doc-image"}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http

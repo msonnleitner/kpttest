@@ -1,0 +1,39 @@
+name: E2E Tests for next/master PR
+on:
+  pull_request:
+    branches:
+    - master
+    - next
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SERVICE_NAME: name
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '14.x'
+    - name: Cache npm files
+      uses: actions/cache@v2
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Install dev dependencies
+      run: npm install
+    - name: install Skaffold
+      run: |
+        curl -Lo /tmp/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && \
+        sudo install /tmp/skaffold /usr/local/bin/
+    - name: Start minikube
+      run: minikube start
+    - run: gcloud auth configure-docker
+    - name: deploy application in k8s cluster (minikube)
+      run: skaffold run
+    - name: Run Nest E2E tests
+      run: |-
+        kubectl port-forward deployment/$NAME 4503:8080 &
+        npm run test:e2e
