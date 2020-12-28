@@ -1,0 +1,12 @@
+- op: add
+  path: /spec/http/-
+  value:
+    name: service-docs # {"$kpt-set":"service-docs"}
+    match:
+      - uri:
+          prefix: /docs/
+    rewrite:
+      uri: /
+    route:
+      - destination:
+          host: service-docs # {"$kpt-set":"service-docs"}

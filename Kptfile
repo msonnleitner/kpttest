@@ -130,3 +130,11 @@ openAPI:
             ref: '#/definitions/io.k8s.cli.setters.gcloud_gcr_project'
           - marker: ${name}
             ref: '#/definitions/io.k8s.cli.setters.name'
+    io.k8s.cli.substitutions.service-docs:
+      x-k8s-cli:
+        substitution:
+          name: service-docs
+          pattern: ${name}-docs
+          values:
+          - marker: ${name}
+            ref: '#/definitions/io.k8s.cli.setters.name'

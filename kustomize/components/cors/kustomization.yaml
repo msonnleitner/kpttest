@@ -1,10 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
-resources:
-- redoc-deployment.yaml
-- redoc-service.yaml
 
-# patchesStrategicMerge does not support CRDs, so use patches
+# patchesStrategicMerge does not support CRDs, so use patchesJSON6902
 #  https://github.com/GoogleContainerTools/kpt/issues/506
 #  https://github.com/kubernetes-sigs/kustomize/issues/742
 
@@ -14,5 +11,4 @@ patches:
       version: v1beta1
       kind: VirtualService
       name: service # {"$kpt-set":"name"}
-    path: add-route-to-virtual-service.yaml
-
+    path: add-cors-to-virtual-service.yaml

@@ -1,0 +1,16 @@
+- op: add
+  path: /spec/http/0/corsPolicy
+  value:
+    allowOrigins:
+      - regex: https://ui.dev.acme.io
+    allowMethods:
+      - POST
+      - GET
+      - OPTIONS
+      - HEAD
+      - PUT
+      - DELETE
+    allowHeaders:
+      - "*"
+    allowCredentials: true
+    maxAge: "24h"

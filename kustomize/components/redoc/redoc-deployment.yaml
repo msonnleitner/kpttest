@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: service-docs
+  name: service-docs # {"$kpt-set":"service-docs"}
   labels:
     app: service # {"$kpt-set":"name"}
     version: v1

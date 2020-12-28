@@ -3,7 +3,3 @@ kind: Component
 resources:
 - request-authentication.yaml
 - request-authorization.yaml
-commonLabels:
-  app: service # {"$kpt-set":"name"}
-  version: v1
-  component: api
