@@ -14,5 +14,18 @@ patches:
       version: v1beta1
       kind: VirtualService
       name: service # {"$kpt-set":"name"}
-    path: add-route-to-virtual-service.yaml
+    patch: |-
+      - op: add
+        path: /spec/http/-
+        value:
+          name: service-docs # {"$kpt-set":"service-docs"}
+          match:
+            - uri:
+                prefix: /docs/
+          rewrite:
+            uri: /
+          route:
+            - destination:
+                host: service-docs # {"$kpt-set":"service-docs"}
+
 

@@ -11,4 +11,20 @@ patches:
       version: v1beta1
       kind: VirtualService
       name: service # {"$kpt-set":"name"}
-    path: add-cors-to-virtual-service.yaml
+    patch: |-
+      - op: add
+        path: /spec/http/0/corsPolicy
+        value:
+          allowOrigins:
+            - regex: https://ui.dev.acme.io
+          allowMethods:
+            - POST
+            - GET
+            - OPTIONS
+            - HEAD
+            - PUT
+            - DELETE
+          allowHeaders:
+            - "*"
+          allowCredentials: true
+          maxAge: "24h"
