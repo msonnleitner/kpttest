@@ -28,3 +28,15 @@ patches:
             - "*"
           allowCredentials: true
           maxAge: "24h"
+  - target:
+      group: security.istio.io
+      version: v1beta1
+      kind: AuthorizationPolicy
+      name: service # {"$kpt-set":"name"}
+    patch: |-
+      - op: add
+        path: /spec/rules/-
+        value:
+          to:
+            - operation:
+                methods: ["OPTIONS"]
