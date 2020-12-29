@@ -10,9 +10,5 @@ resources:
 images:
 - name: eu.gcr.io/tools-org-acme/service # {"$kpt-set":"app-image"}
   newTag: 0.1.11
-configMapGenerator:
-- name: application-properties
-  files:
-  - application.properties
 configurations:
 - config.yaml

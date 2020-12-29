@@ -3,9 +3,10 @@ kind: Kustomization
 resources:
 - ../base-istio
 components:
+- ../components/application-env-variables
 #- ../components/jwt-validation
 #- ../components/sql
 #- ../components/cloud-sql
 #- ../components/flyway-cloudsql
-- ../components/redoc
-- ../components/cors
+#- ../components/redoc
+#- ../components/cors

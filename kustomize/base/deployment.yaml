@@ -10,32 +10,7 @@ spec:
       - name: service # {"$kpt-set":"name"}
         image: eu.gcr.io/tools-org-acme/service # {"$kpt-set":"app-image"}
         imagePullPolicy: IfNotPresent
-        env:
-        - name: stage
-          valueFrom:
-            configMapKeyRef:
-              key: stage
-              name: application-properties
-        - name: baseUrlPartyService
-          valueFrom:
-            configMapKeyRef:
-              key: baseUrlPartyService
-              name: application-properties
-        - name: auth0_domain
-          valueFrom:
-            configMapKeyRef:
-              key: auth0_domain
-              name: application-properties
-        - name: auth0_client_id
-          valueFrom:
-            configMapKeyRef:
-              key: auth0_client_id
-              name: application-properties
-        - name: auth0_audience
-          valueFrom:
-            configMapKeyRef:
-              key: auth0_audience
-              name: application-properties
+        env: []
         ports:
         - name: http
           containerPort: 80
