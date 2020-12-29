@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      SERVICE_NAME: name # {"$kpt-set":"name"}
+      SERVICE_NAME: service # {"$kpt-set":"name"}
       GKE_CLUSTER: gke1 # {"$kpt-set":"gke_cluster"}
       GCLOUD_ZONE: europe-west1 # {"$kpt-set":"gcloud_zone"}
       GCLOUD_APPLICATION_PROJECT: dev-org-acme # {"$kpt-set":"gcloud_application_project"}

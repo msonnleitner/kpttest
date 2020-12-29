@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     env:
-      SERVICE_NAME: name # {"$kpt-set":"name"}
+      SERVICE_NAME: service # {"$kpt-set":"name"}
       GCLOUD_GCR_PROJECT: tools-org-acme # {"$kpt-set":"gcloud_gcr_project"}
       APP_IMAGE: eu.gcr.io/tools-org-acme/service # {"$kpt-set":"app-image"}
     runs-on: ubuntu-latest
