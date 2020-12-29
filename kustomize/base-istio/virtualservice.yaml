@@ -7,7 +7,7 @@ spec:
   hosts:
   - service.dev.acme.io # {"$kpt-set":"hosts"}
   gateways:
-  - party.istio-system.svc.cluster.local
+  - gateway.istio-system.svc.cluster.local # {"$kpt-set":"istio-gateway"}
   http:
   - name: service # {"$kpt-set":"name"}
     route:

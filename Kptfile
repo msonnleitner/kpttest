@@ -138,3 +138,9 @@ openAPI:
           values:
           - marker: ${name}
             ref: '#/definitions/io.k8s.cli.setters.name'
+    io.k8s.cli.setters.istio-gateway:
+      description: istio gateway to reference (assumed to be created externally)
+      x-k8s-cli:
+        setter:
+          name: istio-gateway
+          value: gateway.istio-system.svc.cluster.local
