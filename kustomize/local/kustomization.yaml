@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
 - ../base
 components:
+- ../components/application-env-variables
 - ../components/sql
 - ../components/flyway-local
