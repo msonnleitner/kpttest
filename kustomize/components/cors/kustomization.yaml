@@ -1,42 +1,40 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
-
 # patchesStrategicMerge does not support CRDs, so use patchesJSON6902
 #  https://github.com/GoogleContainerTools/kpt/issues/506
 #  https://github.com/kubernetes-sigs/kustomize/issues/742
-
 patches:
-  - target:
-      group: networking.istio.io
-      version: v1beta1
-      kind: VirtualService
-      name: service # {"$kpt-set":"name"}
-    patch: |-
-      - op: add
-        path: /spec/http/0/corsPolicy
-        value:
-          allowOrigins:
-            - regex: https://ui.dev.acme.io
-          allowMethods:
-            - POST
-            - GET
-            - OPTIONS
-            - HEAD
-            - PUT
-            - DELETE
-          allowHeaders:
-            - "*"
-          allowCredentials: true
-          maxAge: "24h"
-  - target:
-      group: security.istio.io
-      version: v1beta1
-      kind: AuthorizationPolicy
-      name: service # {"$kpt-set":"name"}
-    patch: |-
-      - op: add
-        path: /spec/rules/-
-        value:
-          to:
-            - operation:
-                methods: ["OPTIONS"]
+- target:
+    group: networking.istio.io
+    version: v1beta1
+    kind: VirtualService
+    name: service # {"$kpt-set":"name"}
+  patch: |-
+    - op: add
+      path: /spec/http/0/corsPolicy
+      value:
+        allowOrigins:
+          - regex: https://ui.dev.acme.io
+        allowMethods:
+          - POST
+          - GET
+          - OPTIONS
+          - HEAD
+          - PUT
+          - DELETE
+        allowHeaders:
+          - "*"
+        allowCredentials: true
+        maxAge: "24h"
+- target:
+    group: security.istio.io
+    version: v1beta1
+    kind: AuthorizationPolicy
+    name: service # {"$kpt-set":"name"}
+  patch: |-
+    - op: add
+      path: /spec/rules/-
+      value:
+        to:
+          - operation:
+              methods: ["OPTIONS"]

@@ -3,29 +3,25 @@ kind: Component
 resources:
 - redoc-deployment.yaml
 - redoc-service.yaml
-
 # patchesStrategicMerge does not support CRDs, so use patches
 #  https://github.com/GoogleContainerTools/kpt/issues/506
 #  https://github.com/kubernetes-sigs/kustomize/issues/742
-
 patches:
-  - target:
-      group: networking.istio.io
-      version: v1beta1
-      kind: VirtualService
-      name: service # {"$kpt-set":"name"}
-    patch: |-
-      - op: add
-        path: /spec/http/-
-        value:
-          name: service-docs # {"$kpt-set":"service-docs"}
-          match:
-            - uri:
-                prefix: /docs/
-          rewrite:
-            uri: /
-          route:
-            - destination:
-                host: service-docs # {"$kpt-set":"service-docs"}
-
-
+- target:
+    group: networking.istio.io
+    version: v1beta1
+    kind: VirtualService
+    name: service # {"$kpt-set":"name"}
+  patch: |-
+    - op: add
+      path: /spec/http/-
+      value:
+        name: service-docs # {"$kpt-set":"service-docs"}
+        match:
+          - uri:
+              prefix: /docs/
+        rewrite:
+          uri: /
+        route:
+          - destination:
+              host: service-docs # {"$kpt-set":"service-docs"}
