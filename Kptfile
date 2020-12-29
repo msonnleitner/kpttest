@@ -36,8 +36,9 @@ openAPI:
       description: container registry to use
       x-k8s-cli:
         setter:
-          name: hosts
+          name: container-registry
           value: eu.gcr.io
+          isSet: true
     io.k8s.cli.setters.feature:
       description: for feature branch overlays, set this value
       x-k8s-cli:
