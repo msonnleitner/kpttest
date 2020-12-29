@@ -144,3 +144,21 @@ openAPI:
         setter:
           name: istio-gateway
           value: gateway.istio-system.svc.cluster.local
+    io.k8s.cli.setters.readiness-check-path:
+      description: readiness check path for probes
+      x-k8s-cli:
+        setter:
+          name: readiness-check-path
+          value: /readiness/health
+    io.k8s.cli.setters.liveness-check-path:
+      description: liveness check path for probes
+      x-k8s-cli:
+        setter:
+          name: liveness-check-path
+          value: /liveness/health
+    io.k8s.cli.setters.app-container-port:
+      description: container port for main app
+      x-k8s-cli:
+        setter:
+          name: app-container-port
+          value: "8080"

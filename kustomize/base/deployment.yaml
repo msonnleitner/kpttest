@@ -13,16 +13,16 @@ spec:
         env: []
         ports:
         - name: http
-          containerPort: 80
+          containerPort: 8080 # {"$kpt-set":"app-container-port"}
           protocol: TCP
         livenessProbe:
           httpGet:
-            path: /
-            port: http
+            path: /liveness/health # {"$kpt-set":"liveness-check-path"}
+            port: 8080 # {"$kpt-set":"app-container-port"}
         readinessProbe:
           httpGet:
-            path: /
-            port: http
+            path: /readiness/health # {"$kpt-set":"readiness-check-path"}
+            port: 8080 # {"$kpt-set":"app-container-port"}
         resources:
           limits:
             cpu: 1000m

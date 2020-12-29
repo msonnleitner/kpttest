@@ -10,4 +10,5 @@ spec:
   - to:
     - operation:
         paths:
-        - /health
+        - /liveness/health # {"$kpt-set":"liveness-check-path"}
+        - /readiness/health # {"$kpt-set":"readiness-check-path"}
