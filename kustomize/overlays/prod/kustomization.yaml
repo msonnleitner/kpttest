@@ -4,6 +4,7 @@ resources:
 - ../../gcp
 patchesStrategicMerge:
 - virtualservice.yaml
+- request-authentication.yaml
 configMapGenerator:
 - name: application-properties
   behavior: merge
