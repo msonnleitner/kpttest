@@ -4,4 +4,4 @@ metadata:
   name: service # {"$kpt-set":"name"}
 spec:
   hosts:
-  - service.dev.acme.io
+  - service.acme.io
